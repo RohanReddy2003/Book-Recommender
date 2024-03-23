@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Recommendation</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body style="background-color:black;" class="text-white">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand">Book Recommender</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'recommend' %}">Recommend</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h3>Enter Full Name of the book</h3>
+        <form method="POST" action="{% url 'recommend_books' %}">
+            {% csrf_token %}
+            <div class="form-group mt-3">
+                <div class="input-group">
+                    <input type="text" id="user_input" name="user_input" class="form-control" placeholder="e.g., The Hundred Secret Senses" value="{{ request.POST.user_input }}">
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-black text-white">Recommend</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {% if data %}
+        <h1 class="text-center mb-4 text-white">Recommended books are</h1>
+        <div class="row mt-4" style="background-color: black; margin-right: 0px; margin-left: 0px; color: white;">
+            {% for book in data %}
+                <div class="col-md-3">
+                    <div class="card" style="background-color: black; color: white;">
+                        <img class="card-img-top" src="{{ book.2 }}" alt="Book Image">
+                        <div class="card-body">
+                            <h5 class="card-title" style="color: white;">{{ book.0 }}</h5>
+                            <p class="card-author" style="color: white;">{{ book.1 }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        {% if request.method == 'POST' and not request.POST.user_input %}
+            <h3 class="text-center mb-4 text-white">Please enter the name of the book.</h3>
+        {% endif %}
+        <h3 class="text-center mb-4 text-white">No recommended books available</h3>
+    {% endif %}
+
+
+
+    
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
