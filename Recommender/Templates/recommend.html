@@ -43,15 +43,15 @@
     </div>
 
     {% if data %}
-        <h1 class="text-center mb-4 text-white">Recommended books are</h1>
+        <h1 class="text-center mb-4 text-white">Recommended Books</h1>
         <div class="row mt-4" style="background-color: black; margin-right: 0px; margin-left: 0px; color: white;">
             {% for book in data %}
-                <div class="col-md-3">
-                    <div class="card" style="background-color: black; color: white;">
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100" style="background-color: black; color: white;">
                         <img class="card-img-top" src="{{ book.2 }}" alt="Book Image">
                         <div class="card-body">
-                            <h5 class="card-title" style="color: white;">{{ book.0 }}</h5>
-                            <p class="card-author" style="color: white;">{{ book.1 }}</p>
+                            <h5 class="card-title">{{ book.0 }}</h5>
+                            <p class="card-author">{{ book.1 }}</p>
                         </div>
                     </div>
                 </div>
@@ -60,9 +60,11 @@
     {% else %}
         {% if request.method == 'POST' and not request.POST.user_input %}
             <h3 class="text-center mb-4 text-white">Please enter the name of the book.</h3>
+        {% else %}
+            <h3 class="text-center mb-4 text-white">No recommended books available</h3>
         {% endif %}
-        <h3 class="text-center mb-4 text-white">No recommended books available</h3>
     {% endif %}
+
 
 
 
