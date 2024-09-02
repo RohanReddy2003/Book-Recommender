@@ -1,16 +1,23 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Book Recommendation</title>
+    <link rel="icon" type="image/png" href="{% static 'img/book.png' %}">
     <!-- Bootstrap CSS -->
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body style="background-color:black;" class="text-white">
+<body id="body" class="text-white" style="background-color: black;">
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark" id="navbar">
         <div class="container">
-            <a class="navbar-brand">Book Recommender</a>
+            <a class="navbar-brand d-flex align-items-center">
+                <img src="{% static 'img/book.png' %}" alt="Book Logo" style="width: 30px; height: 30px; margin-right: 10px;">Book Recommender
+            </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -22,20 +29,25 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'recommend' %}">Recommend</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="" id="toggle-theme" onclick="toggleTheme()">🌞</a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
 
+    <!-- Main Content -->
     <div class="container mt-5">
-        <h3>Enter Full Name of the book</h3>
+        <h3 id="main-heading">Enter Full Name of the book</h3>
         <form method="POST" action="{% url 'recommend_books' %}">
             {% csrf_token %}
             <div class="form-group mt-3">
                 <div class="input-group">
-                    <input type="text" id="user_input" name="user_input" class="form-control" placeholder="e.g., The Hundred Secret Senses" value="{{ request.POST.user_input }}">
+                    <input type="text" id="user_input" name="user_input" class="form-control" placeholder="e.g., The Hundred Secret Senses" value="1984" style="
+                        border-radius: 20px;">
                     <div class="input-group-append">
-                        <button type="submit" class="btn btn-black text-white">Recommend</button>
+                        <button type="submit" class="text-white" style="background-color: black;border-radius: 12px; ">Recommend</button>
                     </div>
                 </div>
             </div>
@@ -43,11 +55,12 @@
     </div>
 
     {% if data %}
-        <h1 class="text-center mb-4 text-white">Recommended Books</h1>
-        <div class="row mt-4" style="background-color: black; margin-right: 0px; margin-left: 0px; color: white;">
+        <div class="container mt-4" id="content-container">
+        <h1 class="text-center mb-4 text-white" id="recommend-heading">Check out some recommended Books</h1>
+        <div class="row mt-4" id="recommend-container">
             {% for book in data %}
-                <div class="col-md-3 mb-4">
-                    <div class="card h-100" style="background-color: black; color: white;">
+                <div class="col-md-2 mb-4">
+                    <div class="card h-100 book-card" style="background-color: black; color: white;">
                         <img class="card-img-top" src="{{ book.2 }}" alt="Book Image">
                         <div class="card-body">
                             <h5 class="card-title">{{ book.0 }}</h5>
@@ -57,22 +70,119 @@
                 </div>
             {% endfor %}
         </div>
+        </div>
+        
     {% else %}
         {% if request.method == 'POST' and not request.POST.user_input %}
-            <h3 class="text-center mb-4 text-white">Please enter the name of the book.</h3>
+            <h3 class="text-center mb-4 text-white" id="error-message">Please enter the name of the book.</h3>
         {% else %}
-            <h3 class="text-center mb-4 text-white">No recommended books available</h3>
+            <h3 class="text-center mb-4 text-white" id="error-message">No recommended books available</h3>
         {% endif %}
     {% endif %}
-
-
-
-
-    
 
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Theme Toggle Script -->
+    <script>
+        function applyTheme(theme) {
+            const body = document.getElementById('body');
+            const navbar = document.getElementById('navbar');
+            const heading = document.getElementById('main-heading');
+            const recommendHeading = document.getElementById('recommend-heading');
+            const errorMessage = document.getElementById('error-message');
+            const cards = document.querySelectorAll('.book-card');
+
+            if (theme === 'dark') {
+                body.style.backgroundColor = 'black';
+                body.style.color = 'white';
+                navbar.classList.add('navbar-dark', 'bg-dark');
+                navbar.classList.remove('navbar-light', 'bg-light');
+                heading.classList.add('text-white');
+                heading.classList.remove('text-dark');
+
+                if (recommendHeading) {
+                    recommendHeading.classList.add('text-white');
+                    recommendHeading.classList.remove('text-dark');
+                }
+
+                if (errorMessage) {
+                    errorMessage.classList.add('text-white');
+                    errorMessage.classList.remove('text-dark');
+                }
+
+                cards.forEach(card => {
+                    card.classList.add('bg-dark', 'text-white');
+                    card.classList.remove('bg-light', 'text-dark');
+                });
+
+                document.getElementById('toggle-theme').textContent = "🌞";
+            } else {
+                body.style.backgroundColor = 'white';
+                body.style.color = 'black';
+                navbar.classList.add('navbar-light', 'bg-light');
+                navbar.classList.remove('navbar-dark', 'bg-dark');
+                heading.classList.add('text-dark');
+                heading.classList.remove('text-white');
+
+                if (recommendHeading) {
+                    recommendHeading.classList.add('text-dark');
+                    recommendHeading.classList.remove('text-white');
+                }
+
+                if (errorMessage) {
+                    errorMessage.classList.add('text-dark');
+                    errorMessage.classList.remove('text-white');
+                }
+
+                cards.forEach(card => {
+                    card.classList.add('bg-light', 'text-dark');
+                    card.classList.remove('bg-dark', 'text-white');
+                });
+
+                document.getElementById('toggle-theme').textContent = "🌙";
+            }
+        }
+
+        function toggleTheme() {
+            const currentTheme = localStorage.getItem('theme') === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', currentTheme);
+            applyTheme(currentTheme);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            applyTheme(savedTheme);
+        });
+    </script>
+
+    <!-- Additional CSS for Theme -->
+    <style>
+        .navbar-light .navbar-brand, .navbar-light .nav-link {
+            color: black;
+        }
+
+        .navbar-dark .navbar-brand, .navbar-dark .nav-link {
+            color: white;
+        }
+
+        .bg-dark {
+            background-color: black !important;
+        }
+
+        .bg-light {
+            background-color: white !important;
+        }
+
+        .text-white {
+            color: white !important;
+        }
+
+        .text-dark {
+            color: black !important;
+        }
+    </style>
 </body>
 </html>

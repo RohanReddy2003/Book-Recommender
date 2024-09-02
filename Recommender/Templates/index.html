@@ -1,52 +1,149 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Books Recommender</title>
+    <link rel="icon" type="image/png" href="{% static 'img/book.png' %}">
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        html, body {
+            overflow-x: hidden;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body.dark-theme {
+            background-color: black;
+            color: white;
+        }
+
+        body.light-theme {
+            background-color: white;
+            color: black;
+        }
+
+        .bg-dark {
+            background-color: black !important;
+        }
+
+        .bg-light {
+            background-color: white !important;
+        }
+
+        .text-white {
+            color: white !important;
+        }
+
+        .text-dark {
+            color: black !important;
+        }
+
+        #navbar, #content-container {
+            overflow: hidden;
+        }
+    </style>
 </head>
-<body style="background-color: black;">
+<body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg" id="navbar">
         <div class="container">
-            <a class="navbar-brand"\>Book Recommender</a>
+            <a class="navbar-brand d-flex align-items-center">
+                <img src="{% static 'img/book.png' %}" alt="Book Logo" style="width: 30px; height: 30px; margin-right: 10px;">
+                Book Recommender
+            </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ml-auto">
-                    
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'home' %}">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'recommend' %}">Recommend</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="" id="toggle-theme" onclick="toggleTheme()">🌞</a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-   <div class="container mt-5" style="background-color: black;">
-        <h1 class="text-center mb-4 text-white">Most Popular Books</h1>
+    <!-- Main Content -->
+    <div class="container mt-5" id="content-container">
+        <h1 class="text-center mb-4">Most Popular Books</h1>
         <div class="row">
             {% for name, author, img, vote, rate in book_data %}
-            <div class="col-md-3 mt-4">
-                <div class="card shadow" style="background-color: black; color: white;">
+            <div class="col-md-2 mt-4">
+                <div class="card shadow book-card">
                     <img class="card-img-top" src="{{ img }}" alt="Book Image">
                     <div class="card-body">
                         <h5 class="card-title">{{ name }}</h5>
-                        <p class="card-text" style="color: white;">Author: {{ author }}</p>
-                        <p class="card-text" style="color: white;">Votes: {{ vote }}</p>
-                        <p class="card-text" style="color: white;">Rating: {{ rate|floatformat:2 }}</p>
+                        <p class="card-text">Author: {{ author }}</p>
+                        <p class="card-text">Votes: {{ vote }}</p>
+                        <p class="card-text">Rating: {{ rate|floatformat:2 }}</p>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
     </div>
+
+    <!-- JavaScript for Theme Toggle -->
+    <script>
+        // Function to apply the theme based on the saved preference
+        function applyTheme(theme) {
+            const body = document.body;
+            const navbar = document.getElementById('navbar');
+            const container = document.getElementById('content-container');
+            const cards = document.querySelectorAll('.book-card');
+
+            if (theme === 'dark') {
+                body.classList.add('dark-theme');
+                body.classList.remove('light-theme');
+                navbar.classList.add('navbar-dark', 'bg-dark');
+                navbar.classList.remove('navbar-light', 'bg-light');
+                container.classList.add('bg-dark', 'text-white');
+                container.classList.remove('bg-light', 'text-dark');
+                cards.forEach(card => {
+                    card.classList.add('bg-dark', 'text-white');
+                    card.classList.remove('bg-light', 'text-dark');
+                });
+                document.getElementById('toggle-theme').textContent = "🌞";
+            } else {
+                body.classList.add('light-theme');
+                body.classList.remove('dark-theme');
+                navbar.classList.add('navbar-light', 'bg-light');
+                navbar.classList.remove('navbar-dark', 'bg-dark');
+                container.classList.add('bg-light', 'text-dark');
+                container.classList.remove('bg-dark', 'text-white');
+                cards.forEach(card => {
+                    card.classList.add('bg-light', 'text-dark');
+                    card.classList.remove('bg-dark', 'text-white');
+                });
+                document.getElementById('toggle-theme').textContent = "🌙";
+            }
+        }
+
+        // Function to toggle the theme
+        function toggleTheme() {
+            const currentTheme = localStorage.getItem('theme') === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', currentTheme);
+            applyTheme(currentTheme);
+        }
+
+        // Apply the saved theme on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            applyTheme(savedTheme);
+        });
+    </script>
 
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
